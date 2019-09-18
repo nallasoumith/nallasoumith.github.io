@@ -171,11 +171,11 @@
                 "tradingsymbol": stock,
                 "quantity": Number(document.getElementById("quantity").value),
                 "stoploss": Number(document.getElementById("stop_loss").value),
-                "trigger_stoploss": trigger_stoploss,
+                "trailing_stoploss": trigger_stoploss,
                 "trigger_price": Number(document.getElementById("trigger").value),
                 "price": Number(document.getElementById("price").value),
                 "variety": "bo",
-                "squareoff": Number(document.getElementById("stop_loss").value) * 2,
+                "squareoff": Number(document.getElementById("stop_loss").value) * 1,
                 "readonly": false
             }
             console.log(dict, +" buy")
@@ -189,7 +189,7 @@
                     "tradingsymbol": stock,
                     "quantity": Number(document.getElementById("quantity").value),
                     "stoploss": Number(document.getElementById("stop_loss").value),
-                    "trigger_stoploss": trigger_stoploss,
+                    "trailing_stoploss": trigger_stoploss,
                     "trigger_price": Number(document.getElementById("trigger").value),
                     "price": Number(document.getElementById("price").value),
                     "variety": "bo",
