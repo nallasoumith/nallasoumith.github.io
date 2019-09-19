@@ -107,14 +107,14 @@
     <div class="row row-space">
         <div class="col-2">
             <div class="p-t-15">
-                <button id="buy" class="button" style="background-color: #12c530;"
+                <button id="buy" class="button" onclick ="buy()" style="background-color: #12c530;"
                     style="vertical-align:middle"><span>Buy </span></button>
             </div>
         </div>
         <br>
         <div class="col-2">
             <div class="p-t-15">
-                <button id="sell" class="button" style="background-color: #f71010;"
+                <button id="sell" class="button" onclick ="sell()" style="background-color: #f71010;"
                     style="vertical-align:middle"><span>Sell </span></button>
 
             </div>
@@ -160,7 +160,11 @@
             trailing_stoploss = 1;
         }
           }
-	  //for buyying
+
+ 
+	
+	funcion buy(){
+			  //for buyying
         KiteConnect.ready(function () {
             var kite = new KiteConnect("3e3vtuunvwmwty7g");
             dict = {
@@ -203,7 +207,10 @@
             });
             kite.link("#buy");
         });
-        // for selling
+	}
+	
+	function sell(){
+		       // for selling
         KiteConnect.ready(function () {
             var kite = new KiteConnect("3e3vtuunvwmwty7g");
             dict = {
@@ -247,6 +254,8 @@
             });
             kite.link("#sell");
         });
+	}
+		
 
     //function for price calculator
       function per() {
