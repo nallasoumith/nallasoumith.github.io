@@ -97,7 +97,7 @@
             </div>
             <div class="col-2">
                 <div class="input-group">
-                    <label class="label">Trigger stoploss</label>
+                    <label class="label">Trailing stoploss</label>
                     <input class="input--style-4" type="number" step="0.01"  id="trailing_stoploss">
                 </div>
             </div>
@@ -170,7 +170,7 @@
                 "tradingsymbol": stock,
                 "quantity": Number(document.getElementById("quantity").value),
                 "stoploss": Number(document.getElementById("stop_loss").value),
-                "trailing_stoploss": Number(trailing_stoploss),
+                "trailing_stoploss": Number(document.getElementById("trailing_stoploss").value),
                 "trigger_price": Number(document.getElementById("trigger").value),
                 "price": Number(document.getElementById("price").value),
                 "variety": "bo",
@@ -188,7 +188,7 @@
                     "tradingsymbol": stock,
                     "quantity": Number(document.getElementById("quantity").value),
                     "stoploss": Number(document.getElementById("stop_loss").value),
-                    "trailing_stoploss": Number(trailing_stoploss),
+                    "trailing_stoploss": Number(document.getElementById("trailing_stoploss").value),
                     "trigger_price": Number(document.getElementById("trigger").value),
                     "price": Number(document.getElementById("price").value),
                     "variety": "bo",
@@ -213,7 +213,7 @@
                 "tradingsymbol": stock,
                 "quantity": Number(document.getElementById("quantity").value),
                 "stoploss": Number(document.getElementById("stop_loss").value),
-                "trailing_stoploss": Number(trailing_stoploss),
+                "trailing_stoploss": Number(document.getElementById("trailing_stoploss").value),
                 "trigger_price": Number(document.getElementById("trigger").value),
                 "price": Number(document.getElementById("price").value),
                 "variety": "bo",
@@ -232,7 +232,7 @@
                     "tradingsymbol": stock,
                     "quantity": Number(document.getElementById("quantity").value),
                     "stoploss": Number(document.getElementById("stop_loss").value),
-                    "trailing_stoploss": Number(trailing_stoploss),
+                    "trailing_stoploss": Number(document.getElementById("trailing_stoploss").value),
                     "trigger_price": Number(document.getElementById("trigger").value),
                     "price": Number(document.getElementById("price").value),
                     "variety": "bo",
