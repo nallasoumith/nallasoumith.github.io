@@ -159,7 +159,8 @@
             document.getElementById("trailing_stoploss").value = 1;
             trailing_stoploss = 1;
         }
-        //for buyying
+          }
+	  //for buyying
         KiteConnect.ready(function () {
             var kite = new KiteConnect("3e3vtuunvwmwty7g");
             dict = {
@@ -246,7 +247,7 @@
             });
             kite.link("#sell");
         });
-    }
+
     //function for price calculator
       function per() {
         trigger = Number(document.getElementById("trigger").value);
