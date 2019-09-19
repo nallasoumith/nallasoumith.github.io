@@ -1,3 +1,25 @@
+Skip to content
+ 
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@nallasoumith 
+Learn Git and GitHub without any code!
+Using the Hello World guide, you’ll start a branch, write comments, and open a pull request.
+
+ 
+1
+0 1 nallasoumith/nallasoumith.github.io
+ Code  Issues 0  Pull requests 1  Projects 0  Wiki  Security  Insights  Settings
+nallasoumith.github.io/index.html
+@nallasoumith nallasoumith Update index.html
+6710aff 1 minute ago
+418 lines (390 sloc)  35.9 KB
+    
 <!DOCTYPE html>
 <html lang="en">
 
@@ -98,7 +120,7 @@
             <div class="col-2">
                 <div class="input-group">
                     <label class="label">Trigger stoploss</label>
-                    <input class="input--style-4" type="number" step="0.01"  id="trigger_stoploss">
+                    <input class="input--style-4" type="number" step="0.01"  id="trailing_stoploss">
                 </div>
             </div>
 
@@ -131,7 +153,7 @@
     // Only run your custom code once KiteConnect has fully initialised.
     // Use KiteConnect.ready() to achieve this.
     document.getElementById("loss_amount").value = 125;
-    var trigger, exit, stop_loss, price, quantity, target_1, target_2, loss_amount, relation, stock, trigger_stoploss;
+    var trigger, exit, stop_loss, price, quantity, target_1, target_2, loss_amount, relation, stock, trailing_stoploss;
     var dict = {}
     // function for calculate button
     function cal() {
@@ -152,14 +174,13 @@
         document.getElementById("target_2").value = target_2.toFixed(2);
         document.getElementById("quantity").value = quantity;
         if(stop_loss>1){
-            document.getElementById("trigger_stoploss").value = stop_loss.toFixed(2);
-            trigger_stoploss = stop_loss.toFixed(2);
+            document.getElementById("trailing_stoploss").value = stop_loss.toFixed(2);
+            trailing_stoploss = stop_loss.toFixed(2);
         }
         else{
-            document.getElementById("trigger_stoploss").value = 1;
-            trigger_stoploss = 1;
+            document.getElementById("trailing_stoploss").value = 1;
+            trailing_stoploss = 1;
         }
-
         //for buyying
         KiteConnect.ready(function () {
             var kite = new KiteConnect("3e3vtuunvwmwty7g");
@@ -171,7 +192,7 @@
                 "tradingsymbol": stock,
                 "quantity": Number(document.getElementById("quantity").value),
                 "stoploss": Number(document.getElementById("stop_loss").value),
-                "trailing_stoploss": Number(trigger_stoploss),
+                "trailing_stoploss": Number(trailing_stoploss),
                 "trigger_price": Number(document.getElementById("trigger").value),
                 "price": Number(document.getElementById("price").value),
                 "variety": "bo",
@@ -189,7 +210,7 @@
                     "tradingsymbol": stock,
                     "quantity": Number(document.getElementById("quantity").value),
                     "stoploss": Number(document.getElementById("stop_loss").value),
-                    "trailing_stoploss": Number(trigger_stoploss),
+                    "trailing_stoploss": Number(trailing_stoploss),
                     "trigger_price": Number(document.getElementById("trigger").value),
                     "price": Number(document.getElementById("price").value),
                     "variety": "bo",
@@ -214,7 +235,7 @@
                 "tradingsymbol": stock,
                 "quantity": Number(document.getElementById("quantity").value),
                 "stoploss": Number(document.getElementById("stop_loss").value),
-                "trailing_stoploss": Number(trigger_stoploss),
+                "trailing_stoploss": Number(trailing_stoploss),
                 "trigger_price": Number(document.getElementById("trigger").value),
                 "price": Number(document.getElementById("price").value),
                 "variety": "bo",
@@ -233,7 +254,7 @@
                     "tradingsymbol": stock,
                     "quantity": Number(document.getElementById("quantity").value),
                     "stoploss": Number(document.getElementById("stop_loss").value),
-                    "trailing_stoploss": Number(trigger_stoploss),
+                    "trailing_stoploss": Number(trailing_stoploss),
                     "trigger_price": Number(document.getElementById("trigger").value),
                     "price": Number(document.getElementById("price").value),
                     "variety": "bo",
@@ -260,7 +281,6 @@
         p[0] = (Number(p[0]))
         p[1] = (Number(p[1]))
         console.log(p[1] % 10)
-
         if (trigger > exit) {
             trigger *= 1.001;
             if(Math.floor(p[1]/10) !=9 && Math.floor(p[1]/10) !=0)
@@ -415,3 +435,15 @@
 
 </html>
 <!-- end document-->
+© 2019 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
