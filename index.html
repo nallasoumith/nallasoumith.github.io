@@ -75,6 +75,13 @@
                         <input class="input--style-4" type="number" step="0.01"  id="stop_loss">
                     </div>
                 </div>
+	            <div class="row row-space">
+                <div class="col-2">
+                    <div class="input-group">
+                        <label class="label">Brokerage</label>
+                        <input class="input--style-4" type="number" step="0.01"  id="Brokerage">
+                    </div>
+                </div>	    
                 <div class="col-2">
                     <div class="input-group">
                         <label class="label">Target 1</label>
@@ -247,6 +254,18 @@
             kite.link("#sell");
         });
     }
+	
+	// brokerage calculator
+		function bro() {
+	var z = document.getElementById("price").value;
+	var broker = z*0.0001*2;
+	var STT = z*0.0003;
+	var NSE = z*2*0.0000325;
+	var GST = 18/100*(broker+NSE);
+	var StampDuty = z*2*0.0001;
+	var Totalbrokerage = (broker+STT+NSE+GST+StampDuty);
+    document.getElementById("Brokerage").value = Totalbrokerage;
+			
     //function for price calculator
     function per() {
         trigger = Number(document.getElementById("trigger").value);
