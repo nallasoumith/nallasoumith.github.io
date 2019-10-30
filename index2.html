@@ -141,6 +141,8 @@
 	var qu  = Number(document.getElementById("quantity").value);
 	var z = pri*qu*2
 	var broker = z*0.0001*2;
+	if (broker > 40 )
+	{broker=40}
 	//console.log("broker"+broker)
 	var STT = z*0.0003;
 	//console.log("broker"+STT)
