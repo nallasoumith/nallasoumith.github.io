@@ -1,0 +1,457 @@
+ <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="main.css">
+    <!-- Title Page-->
+    <title>2STrader</title>
+
+</head>
+
+<!-- Include the plugin //-->
+<script src="https://kite.trade/publisher.js?v=3"></script>
+<style src=".main.css"></style>
+
+
+
+<body>
+    <button class="button" tabindex="2" style="background-color: #2c1ef4;" style="vertical-align:middle"
+        onclick="cal()"><span>Calculate </span></button>
+    <div class="page-wrapper bg-gra-02 p-t-130 p-b-100 font-poppins">
+
+        <form method="POST">
+            <div class="input-group">
+                <label class="label">Stock</label>
+                <div autocomplete="off">
+                    <input class="input--style-4" id="myInput" type="text" name="stock" placeholder="Select">
+                </div>
+            </div>
+
+            <div class="row row-space">
+                <div class="col-2">
+                    <div class="input-group">
+                        <label class="label">Trigger</label>
+                        <input class="input--style-4" type="number" step="0.01" id="trigger">
+                    </div>
+                </div>
+
+                <div class="col-2">
+                    <div class="input-group">
+                        <label class="label">Exit</label>
+                        <input class="input--style-4" type="number" step="0.01" id="exit" onblur="per()">
+                    </div>
+                </div>
+
+                <div class="col-2">
+                    <div class="input-group">
+                        <label class="label">Price</label>
+                        <input class="input--style-4" type="number" step="0.01" id="price">
+                    </div>
+                </div>
+            </div>
+            <div class="row row-space">
+                <div class="col-2">
+                    <div class="input-group">
+                        <label class="label">Loss Amount</label>
+                        <input class="input--style-4" type="number" onblur="cal()" step="0.01" id="loss_amount" >
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="input-group">
+                        <label class="label">S-L %</label>
+                        <input class="input--style-4" type="number" step="0.01" id="relation">
+                    </div>
+                </div>
+
+            </div>
+            <div class="row row-space">
+                <div class="col-2">
+                    <div class="input-group">
+                        <label class="label">Brokerage</label>
+                        <input class="input--style-4" type="number" step="0.01"  id="brokerage">
+                    </div>
+                </div>
+                <div class="row row-space">
+                <div class="col-2">
+                    <div class="input-group">
+                        <label class="label">Stop Loss</label>
+                        <input class="input--style-4" type="number" step="0.01"  id="stop_loss">
+                    </div>
+                </div>
+		    <div class="col-2">
+                    <div class="input-group">
+                        <label class="label">Target 1</label>
+                        <input class="input--style-4" type="number" step="0.01"  id="target_1">
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="input-group">
+                        <label class="label">Target 2</label>
+                        <input class="input--style-4" type="number" step="0.01"  id="target_2">
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-2">
+                <div class="input-group">
+                    <label class="label">Quantity</label>
+                    <input class="input--style-4" type="number" step="0.01"  id="quantity">
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="input-group">
+                    <label class="label">Trailing stoploss</label>
+                    <input class="input--style-4" type="number" step="0.01"  id="trailing_stoploss">
+                </div>
+            </div>
+
+    </div>
+
+    <div class="row row-space">
+        <div class="col-2">
+            <div class="p-t-15">
+                <button id="buy" class="button" style="background-color: #12c530;"
+                    style="vertical-align:middle"><span>Buy </span></button>
+            </div>
+        </div>
+        <br>
+        <div class="col-2">
+            <div class="p-t-15">
+                <button id="sell" class="button" style="background-color: #f71010;"
+                    style="vertical-align:middle"><span>Sell </span></button>
+
+            </div>
+        </div>
+
+    </div>
+
+    </form>
+    </div>
+
+</body>
+
+<script>
+ // function for brokerage
+	function bro() {
+	var pri  = Number(document.getElementById("price").value);
+	var qu  = Number(document.getElementById("quantity").value);
+	var z = pri*qu*2
+	var broker = z*0.0001*2;
+	if (broker > 40 )
+	{broker=40}
+	//console.log("broker"+broker)
+	var STT = z*0.0003;
+	//console.log("broker"+STT)
+	var NSE = z*2*0.0000325;
+	//console.log("broker"+NSE)
+	var GST = 18/100*(broker+NSE);
+	//console.log("broker"+GST)
+	var StampDuty = z*2*0.0001;
+	//console.log("broker"+StampDuty)
+	var Totalbrokerage = (broker+STT+NSE+GST+StampDuty).toFixed(2);
+	//console.log("broker"+Totalbrokerage)
+    document.getElementById("brokerage").value = Totalbrokerage;
+	}	
+	
+	
+	
+    // Only run your custom code once KiteConnect has fully initialised.
+    // Use KiteConnect.ready() to achieve this.
+    document.getElementById("loss_amount").value = 125;
+    var trigger, exit, stop_loss, price, quantity, target_1, target_2, loss_amount, relation, stock, trailing_stoploss;
+    var dict = {}
+    // function for calculate button
+    function cal() {
+        trigger = Number(document.getElementById("trigger").value);
+        exit = Number(document.getElementById("exit").value);
+        loss_amount = document.getElementById("loss_amount").value;
+        price = Number(document.getElementById("price").value)
+        stop_loss = Math.abs(trigger - exit);
+        relation = ((stop_loss / trigger) * 100).toFixed(2);
+        quantity = Math.floor(loss_amount / stop_loss);
+        target_1 = stop_loss * 2;
+        target_2 = stop_loss * 10;
+        stock = document.getElementById("myInput").value;
+        document.getElementById("loss_amount").value = loss_amount;
+        document.getElementById("stop_loss").value = stop_loss.toFixed(2);
+        document.getElementById("relation").value = relation;
+        document.getElementById("target_1").value = target_1.toFixed(2);
+        document.getElementById("target_2").value = target_2.toFixed(2);
+        document.getElementById("quantity").value = quantity;
+        if(stop_loss>1){
+            document.getElementById("trailing_stoploss").value = stop_loss.toFixed(2);
+            trailing_stoploss = stop_loss.toFixed(2);
+        }
+        else{
+            document.getElementById("trailing_stoploss").value = 1;
+            trailing_stoploss = 1;
+        }
+	    
+// brokerage function call	    
+	    bro();
+        //for buyying
+        KiteConnect.ready(function () {
+            var kite = new KiteConnect("3e3vtuunvwmwty7g");
+            dict = {
+                "exchange": "NSE",
+                "transaction_type": "BUY",
+                "order_type": "SL",
+                "product": "MIS",
+                "tradingsymbol": stock,
+                "quantity": Number(document.getElementById("quantity").value),
+                "stoploss": Number(document.getElementById("stop_loss").value),
+                "trailing_stoploss": Number(document.getElementById("trailing_stoploss").value),
+                "trigger_price": Number(document.getElementById("trigger").value),
+                "price": Number(document.getElementById("price").value),
+                "variety": "bo",
+                "squareoff": Number(document.getElementById("stop_loss").value) * 2,
+                "readonly": false
+            }
+            console.log(dict, +" buy")
+            kite.add(dict);
+            kite.add(
+                {
+                    "exchange": "NSE",
+                    "transaction_type": "BUY",
+                    "order_type": "SL",
+                    "product": "MIS",
+                    "tradingsymbol": stock,
+                    "quantity": Number(document.getElementById("quantity").value),
+                    "stoploss": Number(document.getElementById("stop_loss").value),
+                    "trailing_stoploss": Number(document.getElementById("trailing_stoploss").value),
+                    "trigger_price": Number(document.getElementById("trigger").value),
+                    "price": Number(document.getElementById("price").value),
+                    "variety": "bo",
+                    "squareoff": Number(document.getElementById("stop_loss").value) * 10,
+                    "readonly": false
+                }
+            );
+            // Register an (optional) callback.
+            kite.finished(function (status, request_token) {
+                alert("Finished. Status is " + status);
+            });
+            kite.link("#buy");
+        });
+        // for selling
+        KiteConnect.ready(function () {
+            var kite = new KiteConnect("3e3vtuunvwmwty7g");
+            dict = {
+                "exchange": "NSE",
+                "transaction_type": "SELL",
+                "order_type": "SL",
+                "product": "MIS",
+                "tradingsymbol": stock,
+                "quantity": Number(document.getElementById("quantity").value),
+                "stoploss": Number(document.getElementById("stop_loss").value),
+                "trailing_stoploss": Number(document.getElementById("trailing_stoploss").value),
+                "trigger_price": Number(document.getElementById("trigger").value),
+                "price": Number(document.getElementById("price").value),
+                "variety": "bo",
+                "squareoff": Number(document.getElementById("stop_loss").value) * 1,
+                "readonly": false
+            }
+            // JSON.stringify(dict);
+            console.log(dict)
+            kite.add(dict);
+            kite.add(
+                {
+                    "exchange": "NSE",
+                    "transaction_type": "SELL",
+                    "order_type": "SL",
+                    "product": "MIS",
+                    "tradingsymbol": stock,
+                    "quantity": Number(document.getElementById("quantity").value),
+                    "stoploss": Number(document.getElementById("stop_loss").value),
+                    "trailing_stoploss": Number(document.getElementById("trailing_stoploss").value),
+                    "trigger_price": Number(document.getElementById("trigger").value),
+                    "price": Number(document.getElementById("price").value),
+                    "variety": "bo",
+                    "squareoff": Number(document.getElementById("stop_loss").value) * 10,
+                    "readonly": false
+                }
+            );
+            // Register an (optional) callback.
+            kite.finished(function (status, request_token) {
+                alert("Finished. Status is " + status);
+            });
+            kite.link("#sell");
+        });
+    }
+    //function for price calculator
+    function per() {
+        trigger = Number(document.getElementById("trigger").value);
+        exit = Number(document.getElementById("exit").value);
+        if (trigger > exit) {
+            trigger *= 1.001;
+	        var p = trigger.toFixed(2);
+			console.log(p+'p')
+        //separate integral and fractional parts and make fractional to integral
+		 var  frac = (p - Math.floor(p)).toFixed(2)
+		 console.log(frac)
+		      p = (p-frac)
+			  console.log(p+'p')
+			  frac = frac*100
+			  console.log(frac+'frac')
+		 //split the fractional parts into two individual digits
+		    var b = frac%10;
+			console.log(b+'b')
+			var a = Math.floor(frac/10)*10;
+			console.log(a+'a')
+			if(b<=5 && b!=0){
+			b=5;    
+			}
+			else if(b==0){
+			b=0}
+			else{
+			b=10
+			}
+			frac = (a+b)/100;
+			p = p+frac;
+			
+                document.getElementById("price").value =  p;
+           }
+        else if (trigger < exit) {
+            trigger *= 0.999;
+            var p = trigger.toFixed(2);
+			console.log(p+'p')
+        //separate integral and fractional parts and make fractional to integral
+		 var  frac = (p - Math.floor(p)).toFixed(2)
+		 console.log(frac)
+		      p = (p-frac)
+			  console.log(p+'p')
+			  frac = frac*100
+			  console.log(frac+'frac')
+		 //split the fractional parts into two individual digits
+		    var b = frac%10;
+			console.log(b+'b')
+			var a = Math.floor(frac/10)*10;
+			console.log(a+'a')
+			if(b<5 && b!=0){
+			b=0;    
+			}
+			else if(b==0 ){
+			}
+			else{
+			b=5
+			}
+			frac = (a+b)/100;
+			p = p+frac;
+			
+                document.getElementById("price").value =  p;
+				}
+        else if (trigger == exit) {
+            console.log("bb")
+            alert("Invalid");
+        }
+     
+    }
+</script>
+
+<script>
+    //auto complete function
+    function autocomplete(inp, arr) {
+        /*the autocomplete function takes two arguments,
+        the text field element and an array of possible autocompleted values:*/
+        var currentFocus;
+        /*execute a function when someone writes in the text field:*/
+        inp.addEventListener("input", function (e) {
+            var a, b, i, val = this.value;
+            /*close any already open lists of autocompleted values*/
+            closeAllLists();
+            if (!val) { return false; }
+            currentFocus = -1;
+            /*create a DIV element that will contain the items (values):*/
+            a = document.createElement("DIV");
+            a.setAttribute("id", this.id + "autocomplete-list");
+            a.setAttribute("class", "autocomplete-items");
+            /*append the DIV element as a child of the autocomplete container:*/
+            this.parentNode.appendChild(a);
+            /*for each item in the array...*/
+            for (i = 0; i < arr.length; i++) {
+                /*check if the item starts with the same letters as the text field value:*/
+                if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                    /*create a DIV element for each matching element:*/
+                    b = document.createElement("DIV");
+                    /*make the matching letters bold:*/
+                    b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                    b.innerHTML += arr[i].substr(val.length);
+                    /*insert a input field that will hold the current array item's value:*/
+                    b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                    /*execute a function when someone clicks on the item value (DIV element):*/
+                    b.addEventListener("click", function (e) {
+                        /*insert the value for the autocomplete text field:*/
+                        inp.value = this.getElementsByTagName("input")[0].value;
+                        /*close the list of autocompleted values,
+                        (or any other open lists of autocompleted values:*/
+                        closeAllLists();
+                    });
+                    a.appendChild(b);
+                }
+            }
+        });
+        /*execute a function presses a key on the keyboard:*/
+        inp.addEventListener("keydown", function (e) {
+            var x = document.getElementById(this.id + "autocomplete-list");
+            if (x) x = x.getElementsByTagName("div");
+            if (e.keyCode == 40) {
+                /*If the arrow DOWN key is pressed,
+                increase the currentFocus variable:*/
+                currentFocus++;
+                /*and and make the current item more visible:*/
+                addActive(x);
+            } else if (e.keyCode == 38) { //up
+                /*If the arrow UP key is pressed,
+                decrease the currentFocus variable:*/
+                currentFocus--;
+                /*and and make the current item more visible:*/
+                addActive(x);
+            } else if (e.keyCode == 13) {
+                /*If the ENTER key is pressed, prevent the form from being submitted,*/
+                e.preventDefault();
+                if (currentFocus > -1) {
+                    /*and simulate a click on the "active" item:*/
+                    if (x) x[currentFocus].click();
+                }
+            }
+        });
+        function addActive(x) {
+            /*a function to classify an item as "active":*/
+            if (!x) return false;
+            /*start by removing the "active" class on all items:*/
+            removeActive(x);
+            if (currentFocus >= x.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = (x.length - 1);
+            /*add class "autocomplete-active":*/
+            x[currentFocus].classList.add("autocomplete-active");
+        }
+        function removeActive(x) {
+            /*a function to remove the "active" class from all autocomplete items:*/
+            for (var i = 0; i < x.length; i++) {
+                x[i].classList.remove("autocomplete-active");
+            }
+        }
+        function closeAllLists(elmnt) {
+            /*close all autocomplete lists in the document,
+            except the one passed as an argument:*/
+            var x = document.getElementsByClassName("autocomplete-items");
+            for (var i = 0; i < x.length; i++) {
+                if (elmnt != x[i] && elmnt != inp) {
+                    x[i].parentNode.removeChild(x[i]);
+                }
+            }
+        }
+        /*execute a function when someone clicks in the document:*/
+        document.addEventListener("click", function (e) {
+            closeAllLists(e.target);
+        });
+    }
+    var stocks = ['20MICRONS', '21STCENMGM', '3IINFOTECH', '3MINDIA', '3PLAND', '5PAISA', '63MOONS', '8KMILES', 'A2ZINFRA', 'AARTIDRUGS', 'AARTIIND', 'AARVEEDEN', 'AAVAS', 'ABAN', 'ABB', 'ABBOTINDIA', 'ABCAPITAL', 'ABFRL', 'ABSLNN50ET', 'ACC', 'ACCELYA', 'ACE', 'ADANIENT', 'ADANIGAS', 'ADANIGREEN', 'ADANIPORTS', 'ADANIPOWER', 'ADANITRANS', 'ADFFOODS', 'ADHUNIK', 'ADHUNIKIND', 'ADLABS', 'ADORWELD', 'ADROITINFO', 'ADSL', 'ADVANIHOTR', 'ADVENZYMES', 'AEGISCHEM', 'AFFLE', 'AGARIND', 'AGCNET', 'AGLSL', 'AGRITECH', 'AGROPHOS', 'AHLEAST', 'AHLUCONT', 'AHLWEST', 'AIAENG', 'AIFL', 'AIONJSW', 'AIRAN', 'AJANTPHARM', 'AJMERA', 'AKSHARCHEM', 'AKSHOPTFBR', 'AKZOINDIA', 'ALANKIT', 'ALBERTDAVD', 'ALBK', 'ALCHEM', 'ALEMBICLTD', 'ALICON', 'ALKALI', 'ALKEM', 'ALKYLAMINE', 'ALLCARGO', 'ALLSEC', 'ALMONDZ', 'ALOKTEXT', 'ALPA', 'ALPHAGEO', 'ALPSINDUS', 'AMARAJABAT', 'AMBER', 'AMBIKCO', 'AMBUJACEM', 'AMDIND', 'AMJLAND', 'AMRUTANJAN', 'ANANTRAJ', 'ANDHRABANK', 'ANDHRACEMT', 'ANDHRSUGAR', 'ANIKINDS', 'ANSALAPI', 'ANSALHSG', 'ANTGRAPHIC', 'ANUP', 'APARINDS', 'APCL', 'APCOTEXIND', 'APEX', 'APLAPOLLO', 'APLLTD', 'APOLLO', 'APOLLOHOSP', 'APOLLOTYRE', 'APOLSINHOT', 'APTECHT', 'ARCHIDPLY', 'ARCHIES', 'ARCOTECH', 'ARIES', 'ARIHANT', 'ARIHANTSUP', 'ARMANFIN', 'AROGRANITE', 'ARROWGREEN', 'ARROWTEX', 'ARSHIYA', 'ARSSINFRA', 'ARVIND', 'ARVINDFASN', 'ARVSMART', 'ASAHIINDIA', 'ASAHISONG', 'ASAL', 'ASHAPURMIN', 'ASHIANA', 'ASHIMASYN', 'ASHOKA', 'ASHOKLEY', 'ASIANHOTNR', 'ASIANPAINT', 'ASIANTILES', 'ASPINWALL', 'ASSAMCO', 'ASTEC', 'ASTERDM', 'ASTRAL', 'ASTRAMICRO', 'ASTRAZEN', 'ASTRON', 'ATFL', 'ATLANTA', 'ATLASCYCLE', 'ATUL', 'ATULAUTO', 'AUBANK', 'AURIONPRO', 'AUROPHARMA', 'AUSOMENT', 'AUTOAXLES', 'AUTOIND', 'AUTOLITIND', 'AVADHSUGAR', 'AVANTIFEED', 'AVTNPL', 'AXISBANK', 'AXISCADES', 'AXISGOLD', 'AXISNIFTY', 'AYMSYNTEX', 'BAFNAPHARM', 'BAGFILMS', 'BAJAJ-AUTO', 'BAJAJCON', 'BAJAJELEC', 'BAJAJFINSV', 'BAJAJHIND', 'BAJAJHLDNG', 'BAJFINANCE', 'BALAJITELE', 'BALAMINES', 'BALKRISHNA', 'BALKRISIND', 'BALLARPUR', 'BALMLAWRIE', 'BALPHARMA', 'BALRAMCHIN', 'BANARBEADS', 'BANARISUG', 'BANCOINDIA', 'BANDHANBNK', 'BANG', 'BANKBARODA', 'BANKBEES', 'BANKINDIA', 'BANSWRAS', 'BARTRONICS', 'BASF', 'BASML', 'BATAINDIA', 'BAYERCROP', 'BBL', 'BBTC', 'BCG', 'BCP', 'BDL', 'BEARDSELL', 'BEDMUTHA', 'BEL', 'BEML', 'BEPL', 'BERGEPAINT', 'BFINVEST', 'BFUTILITIE', 'BGLOBAL', 'BGRENERGY', 'BHAGERIA', 'BHAGYANGR', 'BHAGYAPROP', 'BHANDARI', 'BHARATFORG', 'BHARATGEAR', 'BHARATRAS', 'BHARATWIRE', 'BHARTIARTL', 'BHEL', 'BIGBLOC', 'BIL', 'BILENERGY', 'BINANIIND', 'BINDALAGRO', 'BIOCON', 'BIOFILCHEM', 'BIRLACABLE', 'BIRLACORPN', 'BIRLAMONEY', 'BKMINDST', 'BLBLIMITED', 'BLISSGVS', 'BLKASHYAP', 'BLS', 'BLUECOAST', 'BLUEDART', 'BLUESTARCO', 'BODALCHEM', 'BOMDYEING', 'BOROSIL', 'BOSCHLTD', 'BPCL', 'BPL', 'BRFL', 'BRIGADE', 'BRITANNIA', 'BRNL', 'BROOKS', 'BSE', 'BSELINFRA', 'BSL', 'BSLGOLDETF', 'BSLNIFTY', 'BSOFT', 'BURNPUR', 'BUTTERFLY', 'BVCL', 'BYKE', 'CADILAHC', 'CALSOFT', 'CAMLINFINE', 'CANBK', 'CANDC', 'CANFINHOME', 'CANTABIL', 'CAPACITE', 'CAPLIPOINT', 'CAPTRUST', 'CARBORUNIV', 'CAREERP', 'CARERATING', 'CASTEXTECH', 'CASTROLIND', 'CCHHL', 'CCL', 'CDSL', 'CEATLTD', 'CEBBCO', 'CELEBRITY', 'CELESTIAL', 'CENTENKA', 'CENTEXT', 'CENTRALBK', 'CENTRUM', 'CENTUM', 'CENTURYPLY', 'CENTURYTEX', 'CERA', 'CEREBRAINT', 'CESC', 'CESCVENT', 'CGCL', 'CGPOWER', 'CHALET', 'CHAMBLFERT', 'CHEMFAB', 'CHENNPETRO', 'CHOLAFIN', 'CHOLAHLDNG', 'CHROMATIC', 'CIGNITITEC', 'CIMMCO', 'CINELINE', 'CINEVISTA', 'CIPLA', 'CKFSL', 'CLEDUCATE', 'CLNINDIA', 'CMICABLES', 'CNOVAPETRO', 'COALINDIA', 'COCHINSHIP', 'COFFEEDAY', 'COLPAL', 'COMPINFO', 'COMPUSOFT', 'CONCOR', 'CONFIPET', 'CONSOFINVT', 'CONTROLPR', 'CORALFINAC', 'CORDSCABLE', 'COROMANDEL', 'CORPBANK', 'COSMOFILMS', 'COUNCODOS', 'COX&KINGS', 'CPSEETF', 'CREATIVE', 'CREDITACC', 'CREST', 'CRISIL', 'CRMFGETF', 'CROMPTON','CSBBANK', 'CTE', 'CUB', 'CUBEXTUB', 'CUMMINSIND', 'CUPID', 'CYBERTECH', 'CYIENT', 'DAAWAT', 'DABUR', 'DALBHARAT', 'DALMIASUG', 'DAMODARIND', 'DATAMATICS', 'DBCORP', 'DBL', 'DBREALTY', 'DBSTOCKBRO', 'DCAL', 'DCBBANK', 'DCM', 'DCMNVL', 'DCMSHRIRAM', 'DCW', 'DECCANCE', 'DEEPAKFERT', 'DEEPAKNTR', 'DEEPIND', 'DELTACORP', 'DELTAMAGNT', 'DEN', 'DENORA', 'DFMFOODS', 'DGCONTENT', 'DHAMPURSUG', 'DHANBANK', 'DHANUKA', 'DHARSUGAR', 'DHFL', 'DHUNINV', 'DIAMONDYD', 'DIAPOWER', 'DICIND', 'DIGJAMLTD', 'DISHTV', 'DIVISLAB', 'DIXON', 'DLF', 'DLINKINDIA', 'DMART', 'DNAMEDIA', 'DOLAT', 'DOLLAR', 'DOLPHINOFF', 'DONEAR', 'DPSCLTD', 'DQE', 'DREDGECORP', 'DRREDDY', 'DSSL', 'DTIL', 'DUCON', 'DVL', 'DWARKESH', 'DYNAMATECH', 'DYNPRO', 'EASTSILK', 'EASUNREYRL', 'ECLERX', 'EDELWEISS', 'EDL', 'EDUCOMP', 'EICHERMOT', 'EIDPARRY', 'EIHAHOTELS', 'EIHOTEL', 'EIMCOELECO', 'EKC', 'ELAND', 'ELECON', 'ELECTCAST', 'ELECTHERM', 'ELGIEQUIP', 'ELGIRUBCO', 'EMAMILTD', 'EMAMIPAP', 'EMAMIREAL', 'EMCO', 'EMKAY', 'EMMBI', 'ENDURANCE', 'ENERGYDEV', 'ENGINERSIN', 'ENIL', 'EON', 'EQ30', 'EQUITAS', 'ERIS', 'EROSMEDIA', 'ESABINDIA', 'ESCORTS', 'ESSARSHPNG', 'ESSDEE', 'ESSELPACK', 'ESTER', 'EUROCERA', 'EUROMULTI', 'EUROTEXIND', 'EVEREADY', 'EVERESTIND', 'EXCEL', 'EXCELCROP', 'EXCELINDUS', 'EXIDEIND', 'EXPLEOSOL', 'FACT', 'FAIRCHEM', 'FCL', 'FCONSUMER', 'FCSSOFT', 'FDC', 'FEDERALBNK', 'FEL', 'FELDVR', 'FIEMIND', 'FILATEX', 'FINCABLES', 'FINEORG', 'FINPIPE', 'FLEXITUFF', 'FLFL', 'FMGOETZE', 'FMNL', 'FORCEMOT', 'FORTIS', 'FOSECOIND', 'FRETAIL', 'FSC', 'FSL', 'GABRIEL', 'GAEL', 'GAIL', 'GAL', 'GALAXYSURF', 'GALLANTT', 'GALLISPAT', 'GAMMNINFRA', 'GANDHITUBE', 'GANECOS', 'GANESHHOUC', 'GANGESSECU', 'GANGOTRI', 'GARDENSILK', 'GARFIBRES', 'GATI', 'GAYAHWS', 'GAYAPROJ', 'GDL', 'GEECEE', 'GENESYS', 'GENUSPAPER', 'GENUSPOWER', 'GEOJITFSL', 'GEPIL', 'GESHIP', 'GET&D', 'GFLLIMITED', 'GHCL', 'GICHSGFIN', 'GICRE', 'GILLANDERS', 'GILLETTE', 'GINNIFILA', 'GIPCL', 'GKWLIMITED', 'GLAXO', 'GLENMARK', 'GLOBALVECT', 'GLOBOFFS', 'GLOBUSSPR', 'GMBREW', 'GMDCLTD', 'GMMPFAUDLR', 'GMRINFRA', 'GNA', 'GNFC', 'GOACARBON', 'GOCLCORP', 'GODFRYPHLP', 'GODREJAGRO', 'GODREJCP', 'GODREJIND', 'GODREJPROP', 'GOENKA', 'GOKEX', 'GOKUL', 'GOKULAGRO', 'GOLDBEES', 'GOLDENTOBC', 'GOLDIAM', 'GOLDSHARE', 'GOLDTECH', 'GOODLUCK', 'GPIL', 'GPPL', 'GPTINFRA', 'GRANULES', 'GRAPHITE', 'GRASIM', 'GRAVITA', 'GREAVESCOT', 'GREENLAM', 'GREENPLY', 'GREENPOWER', 'GRINDWELL', 'GROBTEA', 'GRPLTD', 'GRSE', 'GRUH', 'GSCLCEMENT', 'GSFC', 'GSKCONS', 'GSPL', 'GSS', 'GTL', 'GTLINFRA', 'GTNIND', 'GTNTEX', 'GTPL', 'GUFICBIO', 'GUJALKALI', 'GUJAPOLLO', 'GUJFLUORO', 'GUJGASLTD', 'GULFOILLUB', 'GULFPETRO', 'GULPOLY', 'GVKPIL', 'HAL', 'HARITASEAT', 'HARRMALAYA', 'HATHWAY', 'HATSUN', 'HAVELLS', 'HAVISHA', 'HBLPOWER', 'HBSL', 'HCC', 'HCG', 'HCL-INSYS', 'HCLTECH', 'HDFC', 'HDFCAMC', 'HDFCBANK', 'HDFCLIFE', 'HDFCMFGETF', 'HDFCNIFETF', 'HDFCSENETF', 'HDIL', 'HEG', 'HEIDELBERG', 'HERCULES', 'HERITGFOOD', 'HEROMOTOCO', 'HESTERBIO', 'HEXATRADEX', 'HEXAWARE', 'HFCL', 'HGINFRA', 'HGS', 'HIGHGROUND', 'HIKAL', 'HIL', 'HILTON', 'HIMATSEIDE', 'HINDALCO', 'HINDCOMPOS', 'HINDCOPPER', 'HINDMOTORS', 'HINDNATGLS', 'HINDOILEXP', 'HINDPETRO', 'HINDUJAVEN', 'HINDUNILVR', 'HINDZINC', 'HIRECT', 'HISARMETAL', 'HITECH', 'HITECHCORP', 'HITECHGEAR', 'HMT', 'HMVL', 'HNDFDS', 'HNGSNGBEES', 'HONAUT', 'HONDAPOWER', 'HOTELEELA', 'HOVS', 'HPL', 'HSCL', 'HSIL', 'HTMEDIA', 'HUBTOWN', 'HUDCO', 'IBMFNIFTY', 'IBREALEST', 'IBULHSGFIN', 'IBULISL', 'IBVENTURES', 'ICICI500', 'ICICIB22', 'ICICIBANK', 'ICICIBANKN', 'ICICIBANKP', 'ICICIGI', 'ICICIGOLD', 'ICICILIQ', 'ICICILOVOL', 'ICICIMCAP', 'ICICINF100', 'ICICINIFTY', 'ICICINV20', 'ICICINXT50', 'ICICIPRULI', 'ICICISENSX', 'ICIL', 'ICRA', 'ICSA', 'IDBI', 'IDBIGOLD', 'IDEA', 'IDFC','IDFCFIRSTB', 'IDFNIFTYET', 'IEX', 'IFBAGRO', 'IFBIND', 'IFCI', 'IFGLEXPOR', 'IGARASHI', 'IGL', 'IGPL', 'IIFL', 'IITL', 'IL&FSENGG', 'IL&FSTRANS', 'IMFA', 'IMPAL', 'IMPEXFERRO', 'INDBANK', 'INDHOTEL', 'INDIACEM', 'INDIAGLYCO', 'INDIAMART', 'INDIANB', 'INDIANCARD', 'INDIANHUME', 'INDIGO', 'INDLMETER', 'INDNIPPON', 'INDOCO', 'INDORAMA', 'INDOSOLAR', 'INDOSTAR', 'INDOTECH', 'INDOTHAI', 'INDOWIND', 'INDRAMEDCO', 'INDSWFTLAB', 'INDSWFTLTD', 'INDTERRAIN', 'INDUSINDBK', 'INEOSSTYRO', 'INFIBEAM', 'INFOBEAN', 'INFRABEES', 'INFRATEL', 'INFY', 'INGERRAND', 'INOXLEISUR', 'INOXWIND', 'INSECTICID', 'INSPIRISYS', 'INTELLECT', 'INTENTECH', 'INVENTURE', 'IOB', 'IOC', 'IOLCP', 'IPAPPM', 'IPCALAB', 'IPRU5008', 'IRB', 'IRCON','IRCTC', 'ISEC', 'ISFT', 'ISMTLTD', 'ITC', 'ITDC', 'ITDCEM', 'ITI', 'IVC', 'IVP', 'IVRCLINFRA', 'IVZINGOLD', 'IZMO', 'J&KBANK', 'JAGRAN', 'JAGSNPHARM', 'JAIBALAJI', 'JAICORPLTD', 'JAMNAAUTO', 'JAYAGROGN', 'JAYBARMARU', 'JAYNECOIND', 'JAYSREETEA', 'JBCHEPHARM', 'JBFIND', 'JBMA', 'JCHAC', 'JETAIRWAYS', 'JHS', 'JIKIND', 'JINDALPHOT', 'JINDALPOLY', 'JINDALSAW', 'JINDALSTEL', 'JINDCOT', 'JINDRILL', 'JINDWORLD', 'JISLDVREQS', 'JISLJALEQS', 'JITFINFRA', 'JIYAECO', 'JKCEMENT', 'JKIL', 'JKLAKSHMI', 'JKPAPER', 'JKTYRE', 'JMA', 'JMCPROJECT', 'JMFINANCIL', 'JMTAUTOLTD', 'JOCIL', 'JPASSOCIAT', 'JPINFRATEC', 'JPOLYINVST', 'JPPOWER', 'JSL', 'JSLHISAR', 'JSWENERGY', 'JSWHL', 'JSWSTEEL', 'JTEKTINDIA', 'JUBILANT', 'JUBLFOOD', 'JUBLINDS', 'JUMPNET', 'JUNIORBEES', 'JUSTDIAL', 'JVLAGRO', 'JYOTHYLAB', 'KABRAEXTRU', 'KAJARIACER', 'KAKATCEM', 'KALPATPOWR', 'KALYANIFRG', 'KAMATHOTEL', 'KAMDHENU', 'KANANIIND', 'KANORICHEM', 'KANSAINER', 'KARDA', 'KARMAENG', 'KARURVYSYA', 'KAVVERITEL', 'KAYA', 'KCP', 'KCPSUGIND', 'KDDL', 'KEC', 'KECL', 'KEI', 'KELLTONTEC', 'KENNAMET', 'KERNEX', 'KESARENT', 'KESORAMIND', 'KGL', 'KHADIM', 'KHAITANELE', 'KHAITANLTD', 'KICL', 'KILITCH', 'KINGFA', 'KIOCL', 'KIRIINDUS', 'KIRLOSBROS', 'KIRLOSENG', 'KIRLOSIND', 'KITEX', 'KKCL', 'KMSUGAR', 'KNRCON', 'KOHINOOR', 'KOKUYOCMLN', 'KOLTEPATIL', 'KOPRAN', 'KOTAKBANK', 'KOTAKBKETF', 'KOTAKGOLD', 'KOTAKNIFTY', 'KOTAKNV20', 'KOTAKPSUBK', 'KOTARISUG', 'KOTHARIPET', 'KOTHARIPRO', 'KPITTECH', 'KPRMILL', 'KRBL', 'KREBSBIO', 'KRIDHANINF', 'KSB', 'KSCL', 'KSERASERA', 'KSK', 'KSL', 'KTIL', 'KTKBANK', 'KWALITY', 'L&TFH', 'LAKSHVILAS', 'LALPATHLAB', 'LAMBODHARA', 'LAOPALA', 'LASA', 'LAURUSLABS', 'LAXMIMACH', 'LEEL', 'LEMONTREE', 'LFIC', 'LGBBROSLTD', 'LGBFORGE', 'LIBAS', 'LIBERTSHOE', 'LICHSGFIN', 'LICNETFGSC', 'LICNETFN50', 'LICNETFSEN', 'LICNFNHGP', 'LINCOLN', 'LINCPEN', 'LINDEINDIA', 'LIQUIDBEES', 'LIQUIDETF', 'LOKESHMACH', 'LOTUSEYE', 'LOVABLE', 'LPDC', 'LSIL', 'LT', 'LTI', 'LTTS', 'LUMAXIND', 'LUMAXTECH', 'LUPIN', 'LUXIND', 'LYKALABS', 'LYPSAGEMS', 'M&M', 'M&MFIN', 'M100', 'M50', 'MAANALU', 'MADHAV', 'MADHUCON', 'MADRASFERT', 'MAGADSUGAR', 'MAGMA', 'MAGNUM', 'MAHABANK', 'MAHAPEXLTD', 'MAHASTEEL', 'MAHESHWARI', 'MAHINDCIE', 'MAHLIFE', 'MAHLOG', 'MAHSCOOTER', 'MAHSEAMLES', 'MAITHANALL', 'MAJESCO', 'MALUPAPER', 'MAN50ETF', 'MANAKALUCO', 'MANAKCOAT', 'MANAKSIA', 'MANAKSTEEL', 'MANALIPETC', 'MANAPPURAM', 'MANGALAM', 'MANGCHEFER', 'MANGLMCEM', 'MANGTIMBER', 'MANINDS', 'MANINFRA', 'MANPASAND', 'MANUGRAPH', 'MARALOVER', 'MARATHON', 'MARICO', 'MARKSANS', 'MARUTI', 'MASFIN', 'MASKINVEST', 'MASTEK', 'MATRIMONY', 'MAWANASUG', 'MAXINDIA', 'MAXVIL', 'MAYURUNIQ', 'MAZDA', 'MBAPL', 'MBECL', 'MBLINFRA', 'MCDHOLDING', 'MCDOWELL-N', 'MCLEODRUSS', 'MCX', 'MEGASOFT', 'MEGH', 'MENONBE', 'MEP', 'MERCATOR', 'METALFORGE', 'METKORE', 'METROPOLIS', 'MFSL', 'MGL', 'MHRIL', 'MIC', 'MIDHANI', 'MIL', 'MINDACORP', 'MINDAIND', 'MINDTECK', 'MINDTREE', 'MIRCELECTR', 'MIRZAINT', 'MMFL', 'MMTC', 'MODIRUBBER', 'MOHITIND', 'MOHOTAIND', 'MOIL', 'MOLDTECH', 'MOLDTKPAC', 'MONSANTO', 'MONTECARLO', 'MORARJEE', 'MOREPENLAB', 'MOTHERSUMI', 'MOTILALOFS', 'MOTOGENFIN', 'MPHASIS', 'MPSLTD', 'MRF', 'MRO-TEK', 'MRPL', 'MSPL', 'MSTCLTD', 'MTEDUCARE', 'MTNL', 'MUKANDENGG', 'MUKANDLTD', 'MUKTAARTS', 'MUNJALAU', 'MUNJALSHOW', 'MURUDCERA', 'MUTHOOTCAP', 'MUTHOOTFIN', 'MVL', 'N100', 'NACLIND', 'NAGAFERT', 'NAGAROIL', 'NAGREEKCAP', 'NAGREEKEXP', 'NAHARCAP', 'NAHARINDUS', 'NAHARPOLY', 'NAHARSPING', 'NATCOPHARM', 'NATHBIOGEN', 'NATIONALUM', 'NATNLSTEEL', 'NAUKRI', 'NAVINFLUOR', 'NAVKARCORP', 'NAVNETEDUL', 'NBCC', 'NBIFIN', 'NBVENTURES', 'NCC', 'NCLIND', 'NDGL', 'NDL', 'NDTV', 'NECCLTD', 'NECLIFE', 'NELCAST', 'NELCO', 'NEOGEN', 'NESCO', 'NESTLEIND', 'NETF', 'NETWORK18', 'NEULANDLAB', 'NEWGEN', 'NEXTMEDIA', 'NFL', 'NH', 'NHPC', 'NIACL', 'NIBL', 'NIFTYBEES', 'NIITLTD', 'NIITTECH', 'NILAINFRA', 'NILASPACES', 'NILKAMAL', 'NIPPOBATRY', 'NITCO', 'NITESHEST', 'NITINFIRE', 'NITINSPIN', 'NKIND', 'NLCINDIA', 'NMDC', 'NOCIL', 'NOIDATOLL', 'NRAIL', 'NRBBEARING', 'NSIL', 'NTL', 'NTPC', 'NUCLEUS', 'NUTEK', 'OAL', 'OBEROIRLTY', 'OCCL', 'OFSS', 'OIL', 'OILCOUNTUB', 'OISL', 'OLECTRA', 'OMAXAUTO', 'OMAXE', 'OMKARCHEM', 'OMMETALS', 'ONELIFECAP', 'ONEPOINT', 'ONGC', 'ONMOBILE', 'ONWARDTEC', 'OPTIEMUS', 'OPTOCIRCUI', 'ORBTEXP', 'ORCHIDPHAR', 'ORICONENT', 'ORIENTABRA', 'ORIENTALTL', 'ORIENTBANK', 'ORIENTBELL', 'ORIENTCEM', 'ORIENTELEC', 'ORIENTHOT', 'ORIENTLTD', 'ORIENTPPR', 'ORIENTREF', 'ORISSAMINE', 'ORTEL', 'ORTINLABSS', 'OSWALAGRO', 'PAGEIND', 'PAISALO', 'PALASHSECU', 'PALREDTEC', 'PANACEABIO', 'PANAMAPET', 'PAPERPROD', 'PARABDRUGS', 'PARACABLES', 'PARAGMILK', 'PARSVNATH', 'PATELENG', 'PATINTLOG', 'PATSPINLTD', 'PCJEWELLER', 'PDMJEPAPER', 'PDPL', 'PDSMFL', 'PEARLPOLY', 'PEL', 'PENIND', 'PENINLAND', 'PERSISTENT', 'PETRONENGG', 'PETRONET', 'PFC', 'PFIZER', 'PFOCUS', 'PFS', 'PGEL', 'PGHH', 'PGHL', 'PGIL', 'PHILIPCARB', 'PHOENIXLTD', 'PIDILITIND', 'PIIND', 'PILANIINVS', 'PILITA', 'PIONDIST', 'PIONEEREMB', 'PIRPHYTO', 'PITTIENG', 'PKTEA', 'PLASTIBLEN', 'PNB', 'PNBGILTS', 'PNBHOUSING', 'PNC', 'PNCINFRA', 'PODDARHOUS', 'PODDARMENT', 'POKARNA', 'POLYCAB', 'POLYMED', 'POLYPLEX', 'PONNIERODE', 'POWERGRID', 'POWERMECH', 'PPAP', 'PPL', 'PRABHAT', 'PRAENG', 'PRAJIND', 'PRAKASH', 'PRAKASHCON', 'PRAXIS', 'PRECAM', 'PRECOT', 'PRECWIRE', 'PREMEXPLN', 'PREMIER', 'PREMIERPOL', 'PRESSMN', 'PRESTIGE', 'PRICOLLTD', 'PRIMESECU', 'PROSEED', 'PROVOGE', 'PROZONINTU', 'PRSMJOHNSN', 'PSB', 'PSL', 'PSPPROJECT', 'PSUBNKBEES', 'PTC', 'PTL', 'PUNJABCHEM', 'PUNJLLOYD', 'PURVA', 'PVP', 'PVR', 'QGOLDHALF', 'QNIFTY', 'QUESS', 'QUICKHEAL', 'QUINTEGRA', 'RADAAN', 'RADICO', 'RADIOCITY', 'RAIN', 'RAINBOWPAP', 'RAJESHEXPO', 'RAJRAYON', 'RAJSREESUG', 'RAJTV', 'RALLIS', 'RAMANEWS', 'RAMASTEEL', 'RAMCOCEM', 'RAMCOIND', 'RAMCOSYS', 'RAMKY', 'RANASUG', 'RANEENGINE', 'RANEHOLDIN', 'RATNAMANI', 'RAYMOND', 'RBL', 'RBLBANK', 'RCF', 'RCOM', 'RECLTD', 'REDINGTON', 'REFEX', 'RELAXO', 'RELCAPITAL', 'RELCNX100', 'RELCONS', 'RELDIVOPP', 'RELIANCE', 'RELIGARE', 'RELINFRA', 'RELNV20', 'REMSONSIND', 'RENUKA', 'REPCOHOME', 'REPRO', 'RESPONIND', 'RETFMID150', 'REVATHI', 'RGL', 'RHFL', 'RICOAUTO', 'RIIL', 'RITES', 'RKDL', 'RKFORGE', 'RMCL', 'RML', 'RNAM', 'RNAVAL', 'ROHITFERRO', 'ROHLTD', 'ROLLT', 'ROLTA', 'ROSSELLIND', 'RPGLIFE', 'RPOWER', 'RPPINFRA', 'RRSLGETF', 'RSSOFTWARE', 'RSWM', 'RSYSTEMS', 'RTNINFRA', 'RTNPOWER', 'RUBYMILLS', 'RUCHINFRA', 'RUCHIRA', 'RUCHISOYA', 'RUPA', 'RUSHIL', 'RVNL', 'SABTN', 'SADBHAV', 'SADBHIN', 'SAGARDEEP', 'SAGCEM', 'SAIL', 'SAKAR', 'SAKHTISUG', 'SAKSOFT', 'SAKUMA', 'SALASAR', 'SALONA', 'SALSTEEL', 'SALZERELEC', 'SAMBHAAV', 'SANCO', 'SANDESH', 'SANDHAR', 'SANGAMIND', 'SANGHIIND', 'SANGHVIFOR', 'SANGHVIMOV', 'SANGINITA', 'SANOFI', 'SANWARIA', 'SARDAEN', 'SAREGAMA', 'SARLAPOLY', 'SASKEN', 'SASTASUNDR', 'SATHAISPAT', 'SATIA', 'SATIN', 'SBIETFQLTY', 'SBILIFE', 'SBIN', 'SCAPDVR', 'SCHAEFFLER', 'SCHAND', 'SCHNEIDER', 'SCI', 'SDBL', 'SEAMECLTD', 'SELAN', 'SELMCL', 'SEPOWER', 'SEQUENT', 'SESHAPAPER', 'SETCO', 'SETFGOLD', 'SETFNIF50', 'SETFNIFBK', 'SETFNN50', 'SETUINFRA', 'SEYAIND', 'SFL', 'SGL', 'SHAHALLOYS', 'SHAKTIPUMP', 'SHALBY', 'SHALPAINTS', 'SHANKARA', 'SHANTIGEAR', 'SHARDACROP', 'SHARDAMOTR', 'SHARIABEES', 'SHEMAROO', 'SHILPAMED', 'SHIRPUR-G', 'SHIVAMAUTO', 'SHIVAMILLS', 'SHIVATEX', 'SHK', 'SHOPERSTOP', 'SHREDIGCEM', 'SHREECEM', 'SHREEPUSHK', 'SHREERAMA', 'SHRENIK', 'SHREYANIND', 'SHREYAS', 'SHRIPISTON', 'SHRIRAMCIT', 'SHRIRAMEPC', 'SHYAMCENT', 'SICAGEN', 'SICAL', 'SIEMENS', 'SIGIND', 'SIL', 'SILINV', 'SIMBHALS', 'SIMPLEXINF', 'SINTEX', 'SIRCA', 'SIS', 'SITASHREE', 'SITINET', 'SIYSIL', 'SJVN', 'SKFINDIA', 'SKIL', 'SKIPPER', 'SKMEGGPROD', 'SMARTLINK', 'SMLISUZU', 'SMPL', 'SMSLIFE', 'SMSPHARMA', 'SNOWMAN', 'SOBHA', 'SOLARA', 'SOLARINDS', 'SOMANYCERA', 'SOMATEX', 'SOMICONVEY', 'SONATSOFTW', 'SORILINFRA', 'SOTL', 'SOUTHBANK', 'SOUTHWEST', 'SPAL', 'SPANDANA', 'SPARC', 'SPCENET', 'SPECIALITY', 'SPENCERS', 'SPENTEX', 'SPIC', 'SPICEJET', 'SPICEMOBI', 'SPLIL', 'SPMLINFRA', 'SPTL', 'SPYL', 'SREEL', 'SREINFRA', 'SRF', 'SRHHYPOLTD', 'SRIPIPES', 'SRSLTD', 'SRTRANSFIN', 'SSWL', 'STAMPEDE', 'STAR', 'STARCEMENT', 'STARPAPER', 'STCINDIA', 'STEELCITY', 'STEELXIND', 'STEL', 'STERTOOLS', 'STRTECH', 'SUBEX', 'SUBROS', 'SUDARSCHEM', 'SUJANAUNI', 'SUMEETINDS', 'SUMIT', 'SUMMITSEC', 'SUNCLAYLTD', 'SUNDARAM', 'SUNDARMFIN', 'SUNDARMHLD', 'SUNDRMBRAK', 'SUNDRMFAST', 'SUNFLAG', 'SUNILHITEC', 'SUNPHARMA', 'SUNTECK', 'SUNTV', 'SUPERHOUSE', 'SUPERSPIN', 'SUPPETRO', 'SUPRAJIT', 'SUPREMEIND', 'SUPREMEINF', 'SURANASOL', 'SURANAT&P', 'SURYALAXMI', 'SURYAROSNI', 'SUTLEJTEX', 'SUVEN', 'SUZLON', 'SWANENERGY', 'SWARAJENG', 'SWELECTES', 'SWSOLAR', 'SYMPHONY', 'SYNCOM', 'SYNDIBANK', 'SYNGENE', 'TAINWALCHM', 'TAJGVK', 'TAKE', 'TALBROAUTO', 'TALWALKARS', 'TALWGYM', 'TANLA', 'TANTIACONS', 'TARAJEWELS', 'TARAPUR', 'TARMAT', 'TASTYBITE', 'TATACHEM', 'TATACOFFEE', 'TATACOMM', 'TATAELXSI', 'TATAGLOBAL', 'TATAINVEST', 'TATAMETALI', 'TATAMOTORS', 'TATAMTRDVR', 'TATAPOWER', 'TATASPONGE', 'TATASTEEL', 'TATASTLBSL', 'TATASTLLP', 'TBZ', 'TCI', 'TCIDEVELOP', 'TCIEXP', 'TCIFINANCE', 'TCNSBRANDS', 'TCPLPACK', 'TCS', 'TDPOWERSYS', 'TEAMLEASE', 'TECHIN', 'TECHM', 'TECHNOE', 'TECHNOFAB', 'TEJASNET', 'TERASOFT', 'TEXINFRA', 'TEXMOPIPES', 'TEXRAIL', 'TFCILTD', 'TFL', 'TGBHOTELS', 'THANGAMAYL', 'THEINVEST', 'THEMISMED', 'THERMAX', 'THIRUSUGAR', 'THOMASCOOK', 'THYROCARE', 'TI', 'TIDEWATER', 'TIIL', 'TIINDIA', 'TIJARIA', 'TIL', 'TIMESGTY', 'TIMETECHNO', 'TIMKEN', 'TINPLATE', 'TIPSINDLTD', 'TIRUMALCHM', 'TITAN', 'TMRVL', 'TNPETRO', 'TNPL', 'TOKYOPLAST', 'TORNTPHARM', 'TORNTPOWER', 'TPLPLASTEH', 'TREEHOUSE', 'TREJHARA', 'TRENT', 'TRF', 'TRIDENT', 'TRIGYN', 'TRIL', 'TRITURBINE', 'TRIVENI', 'TTKHLTCARE', 'TTKPRESTIG', 'TTL', 'TTML', 'TV18BRDCST', 'TVSELECT', 'TVSMOTOR', 'TVSSRICHAK', 'TVTODAY', 'TVVISION', 'TWL', 'UBL', 'UCALFUEL', 'UCOBANK', 'UFLEX', 'UFO', 'UGARSUGAR', 'UJAAS', 'UJJIVAN','UJJIVANSFB', 'ULTRACEMCO', 'UMANGDAIRY', 'UNICHEMLAB', 'UNIENTER', 'UNIONBANK', 'UNIPLY', 'UNITECH', 'UNITEDBNK', 'UNITEDTEA', 'UNITY', 'UNIVCABLES', 'UPL', 'URJA', 'USHAMART', 'UTINEXT50', 'UTINIFTETF', 'UTISENSETF', 'UTISXN50', 'UTTAMSTL', 'UTTAMSUGAR', 'UVSL', 'V2RETAIL', 'VADILALIND', 'VAIBHAVGBL', 'VAKRANGEE', 'VARDHACRLC', 'VARDMNPOLY', 'VARROC', 'VASCONEQ', 'VASWANI', 'VBL', 'VEDL', 'VENKEYS', 'VENUSREM', 'VESUVIUS', 'VETO', 'VGUARD', 'VHL', 'VICEROY', 'VIDEOIND', 'VIDHIING', 'VIJIFIN', 'VIKASECO', 'VIKASMCORP', 'VIKASPROP', 'VIKASWSP', 'VIMTALABS', 'VINATIORGA', 'VINDHYATEL', 'VINYLINDIA', 'VIPCLOTHNG', 'VIPIND', 'VIPULLTD', 'VISAKAIND', 'VISASTEEL', 'VISESHINFO', 'VISHNU', 'VIVIDHA', 'VIVIMEDLAB', 'VLSFINANCE', 'VMART', 'VOLTAMP', 'VOLTAS', 'VRLLOG', 'VSSL', 'VSTIND', 'VSTTILLERS', 'VTL', 'WABAG', 'WABCOINDIA', 'WALCHANNAG', 'WANBURY', 'WATERBASE', 'WEBELSOLAR', 'WEIZFOREX', 'WEIZMANIND', 'WELCORP', 'WELENT', 'WELINV', 'WELSPUNIND', 'WENDT', 'WESTLIFE', 'WHEELS', 'WHIRLPOOL', 'WILLAMAGOR', 'WINDMACHIN', 'WIPRO', 'WOCKPHARMA', 'WONDERLA', 'WSI', 'WSTCSTPAPR', 'XCHANGING', 'XELPMOC', 'XLENERGY', 'XPROINDIA', 'YESBANK', 'ZEEL', 'ZEELEARN', 'ZEEMEDIA', 'ZENITHBIR', 'ZENITHEXPO', 'ZENSARTECH', 'ZENTEC', 'ZICOM', 'ZODIACLOTH', 'ZODJRDMKJ', 'ZOTA', 'ZUARI', 'ZUARIGLOB', 'ZYDUSWELL']</script>
+<script>autocomplete(document.getElementById("myInput"), stocks);</script>
+
+
+</html>
+
