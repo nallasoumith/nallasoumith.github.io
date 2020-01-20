@@ -208,12 +208,32 @@
                 "trigger_price": Number(document.getElementById("trigger").value),
                 "price": Number(document.getElementById("price").value),
                 "variety": "bo",
-                "squareoff": Number(document.getElementById("stop_loss").value) * 2,
+                "squareoff": Number(document.getElementById("stop_loss").value) * 1,
                 "readonly": false
             }
             console.log(dict, +" buy")
             kite.add(dict);
-            kite.add(
+            // 2nd order
+		kite.add(
+                {
+                    "exchange": "NSE",
+                    "transaction_type": "BUY",
+                    "order_type": "SL",
+                    "product": "MIS",
+                    "tradingsymbol": stock,
+                    "quantity": Number(document.getElementById("quantity").value),
+                    "stoploss": Number(document.getElementById("stop_loss").value),
+                    "trailing_stoploss": Number(document.getElementById("trailing_stoploss").value),
+                    "trigger_price": Number(document.getElementById("trigger").value),
+                    "price": Number(document.getElementById("price").value),
+                    "variety": "bo",
+                    "squareoff": Number(document.getElementById("stop_loss").value) * 2,
+                    "readonly": false
+                }
+            );
+		
+	    //3rd order
+		kite.add(
                 {
                     "exchange": "NSE",
                     "transaction_type": "BUY",
@@ -257,7 +277,27 @@
             // JSON.stringify(dict);
             console.log(dict)
             kite.add(dict);
-            kite.add(
+          // 2nd sell order
+		kite.add(
+                {
+                    "exchange": "NSE",
+                    "transaction_type": "SELL",
+                    "order_type": "SL",
+                    "product": "MIS",
+                    "tradingsymbol": stock,
+                    "quantity": Number(document.getElementById("quantity").value),
+                    "stoploss": Number(document.getElementById("stop_loss").value),
+                    "trailing_stoploss": Number(document.getElementById("trailing_stoploss").value),
+                    "trigger_price": Number(document.getElementById("trigger").value),
+                    "price": Number(document.getElementById("price").value),
+                    "variety": "bo",
+                    "squareoff": Number(document.getElementById("stop_loss").value) * 2,
+                    "readonly": false
+                }
+            );
+		
+		// 3rd sell order
+		kite.add(
                 {
                     "exchange": "NSE",
                     "transaction_type": "SELL",
