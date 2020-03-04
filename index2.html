@@ -183,7 +183,9 @@
         document.getElementById("target_1").value = target_1.toFixed(2);
         document.getElementById("target_2").value = target_2.toFixed(2);
         document.getElementById("quantity").value = quantity;
-        if(stop_loss>1){
+    if(trigger<100){
+		
+	        if(stop_loss>1){
             document.getElementById("trailing_stoploss").value = stop_loss.toFixed(2);
             trailing_stoploss = stop_loss.toFixed(2);
         }
@@ -191,6 +193,67 @@
             document.getElementById("trailing_stoploss").value = 1;
             trailing_stoploss = 1;
         }
+            }
+        else if(trigger>100 && trigger<200 ){
+        if(stop_loss>1.5){
+            document.getElementById("trailing_stoploss").value = stop_loss.toFixed(2);
+            trailing_stoploss = stop_loss.toFixed(2);
+        }
+        else{
+            document.getElementById("trailing_stoploss").value = 1.5;
+            trailing_stoploss = 1.5;
+        }   
+        }
+		  else if(trigger>200 && trigger<400 ){
+		   if(stop_loss>2){
+            document.getElementById("trailing_stoploss").value = stop_loss.toFixed(2);
+            trailing_stoploss = stop_loss.toFixed(2);
+        }
+        else{
+            document.getElementById("trailing_stoploss").value = 2;
+            trailing_stoploss = 2;
+        }   
+		  }
+		   else if(trigger>400 && trigger<600 ){
+		    if(stop_loss>2.5){
+            document.getElementById("trailing_stoploss").value = stop_loss.toFixed(2);
+            trailing_stoploss = stop_loss.toFixed(2);
+        }
+        else{
+            document.getElementById("trailing_stoploss").value = 2.5;
+            trailing_stoploss = 2.5;
+        }   
+		   }
+		    else if(trigger>600 && trigger<800 ){
+			 if(stop_loss>3){
+            document.getElementById("trailing_stoploss").value = stop_loss.toFixed(2);
+            trailing_stoploss = stop_loss.toFixed(2);
+        }
+        else{
+            document.getElementById("trailing_stoploss").value = 3;
+            trailing_stoploss = 3;
+        }   
+			}
+			 else if(trigger>800 && trigger<1000 ){
+			  if(stop_loss>4){
+            document.getElementById("trailing_stoploss").value = stop_loss.toFixed(2);
+            trailing_stoploss = stop_loss.toFixed(2);
+        }
+        else{
+            document.getElementById("trailing_stoploss").value = 4;
+            trailing_stoploss = 4;
+        }   
+			 }
+	     else if(trigger>=1000){
+		  if(stop_loss>5){
+            document.getElementById("trailing_stoploss").value = stop_loss.toFixed(2);
+            trailing_stoploss = stop_loss.toFixed(2);
+        }
+        else{
+            document.getElementById("trailing_stoploss").value = 5;
+            trailing_stoploss = 5;
+        }   
+		 } 
 	    
 // brokerage function call	    
 	    bro();
