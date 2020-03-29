@@ -172,7 +172,7 @@
         price = Number(document.getElementById("price").value)
         stop_loss = Math.abs(trigger - exit);
         relation = ((stop_loss / trigger) * 100).toFixed(2);
-        quantity = Math.floor(loss_amount / stop_loss);
+        quantity = 75;
         target_1 = stop_loss * 1;
         target_2 = stop_loss * 10;
         stock = document.getElementById("myInput").value;
@@ -181,7 +181,7 @@
         document.getElementById("relation").value = relation;
         document.getElementById("target_1").value = target_1.toFixed(2);
         document.getElementById("target_2").value = target_2.toFixed(2);
-        document.getElementById("quantity").value = 75;
+        document.getElementById("quantity").value = quantity;
          if(trigger<=100){
 		
 	        if(stop_loss>1){
