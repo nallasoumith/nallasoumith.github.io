@@ -172,7 +172,7 @@
         price = Number(document.getElementById("price").value)
         stop_loss = Math.abs(trigger - exit);
         relation = ((stop_loss / trigger) * 100).toFixed(2);
-        quantity = Math.floor(loss_amount / (stop_loss*2));
+        quantity = Math.floor(loss_amount / stop_loss);
         target_1 = stop_loss * 1;
         target_2 = stop_loss * 10;
         stock = document.getElementById("myInput").value;
@@ -275,7 +275,7 @@
             }
             console.log(dict, +" buy")
             kite.add(dict);
-            kite.add(
+/*            kite.add(
                 {
                     "exchange": "NSE",
                     "transaction_type": "BUY",
@@ -298,6 +298,7 @@
             });
             kite.link("#buy");
         });
+*/	
         // for selling
         KiteConnect.ready(function () {
             var kite = new KiteConnect("3e3vtuunvwmwty7g");
@@ -319,7 +320,7 @@
             // JSON.stringify(dict);
             console.log(dict)
             kite.add(dict);
-            kite.add(
+/*            kite.add(
                 {
                     "exchange": "NSE",
                     "transaction_type": "SELL",
@@ -336,6 +337,7 @@
                     "readonly": false
                 }
             );
+*/	    
             // Register an (optional) callback.
             kite.finished(function (status, request_token) {
                 alert("Finished. Status is " + status);
