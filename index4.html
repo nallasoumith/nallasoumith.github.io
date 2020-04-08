@@ -275,7 +275,7 @@
             }
             console.log(dict, +" buy")
             kite.add(dict);
-/*            kite.add(
+		kite.add(
                 {
                     "exchange": "NSE",
                     "transaction_type": "BUY",
@@ -298,7 +298,7 @@
             });
             kite.link("#buy");
         });
-*/	
+	
         // for selling
         KiteConnect.ready(function () {
             var kite = new KiteConnect("3e3vtuunvwmwty7g");
@@ -320,7 +320,7 @@
             // JSON.stringify(dict);
             console.log(dict)
             kite.add(dict);
-/*            kite.add(
+            kite.add(
                 {
                     "exchange": "NSE",
                     "transaction_type": "SELL",
@@ -337,7 +337,7 @@
                     "readonly": false
                 }
             );
-*/	    
+	    
             // Register an (optional) callback.
             kite.finished(function (status, request_token) {
                 alert("Finished. Status is " + status);
