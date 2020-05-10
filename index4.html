@@ -274,19 +274,19 @@
                 "readonly": false
             }
             console.log(dict, +" buy")
-          //  kite.add(dict);
+            kite.add(dict);
 		kite.add(
                 {
                     "exchange": "NSE",
-                    "transaction_type": "BUY",
-                    "order_type": "SL",
+                    "transaction_type": "SELL",
+                    "order_type": "SL-M",
                     "product": "MIS",
                     "tradingsymbol": stock,
                     "quantity": Number(document.getElementById("quantity").value),
                    // "stoploss": Number(document.getElementById("stop_loss").value),
                    // "trailing_stoploss": Number(document.getElementById("trailing_stoploss").value),
-                    "trigger_price": Number(document.getElementById("trigger").value),
-                    "price": Number(document.getElementById("price").value),
+                    "trigger_price": Number(document.getElementById("exit").value),
+                    //"price": Number(document.getElementById("price").value),
                     "variety": "regular",
                     //"squareoff": Number(document.getElementById("stop_loss").value) * 10,
                     "readonly": false
@@ -319,18 +319,18 @@
             }
             // JSON.stringify(dict);
             console.log(dict)
- //           kite.add(dict);
+            kite.add(dict);
             kite.add(
                 {
                     "exchange": "NSE",
-                    "transaction_type": "SELL",
-                    "order_type": "SL",
+                    "transaction_type": "BUY",
+                    "order_type": "SL-M",
                     "product": "MIS",
                     "tradingsymbol": stock,
                     "quantity": Number(document.getElementById("quantity").value),
                     //"stoploss": Number(document.getElementById("stop_loss").value),
                     //"trailing_stoploss": Number(document.getElementById("trailing_stoploss").value),
-                    "trigger_price": Number(document.getElementById("trigger").value),
+                    "trigger_price": Number(document.getElementById("exit").value),
                     "price": Number(document.getElementById("price").value),
                     "variety": "regular",
                     //"squareoff": Number(document.getElementById("stop_loss").value) * 10,
