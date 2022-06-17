@@ -297,7 +297,7 @@
   kite.add(
               {
                 "exchange": "NSE",
-                "transaction_type": "BUY",
+                "transaction_type": "SELL",
                 "order_type": "LIMIT",
                 "product": "MIS",
                 "tradingsymbol": stock,
@@ -356,6 +356,23 @@
                     "readonly": false
                 }
             );
+		kite.add(
+              {
+                "exchange": "NSE",
+                "transaction_type": "BUY",
+                "order_type": "LIMIT",
+                "product": "MIS",
+                "tradingsymbol": stock,
+                "quantity": Number(document.getElementById("quantity").value),
+               // "stoploss": Number(document.getElementById("stop_loss").value),
+               // "trailing_stoploss": Number(document.getElementById("trailing_stoploss").value),
+               // "trigger_price": Number(document.getElementById("trigger").value),
+                "price": Number(document.getElementById("price").value)-target_1,
+                "variety": "regular",
+                //"squareoff": Number(document.getElementById("stop_loss").value) * 1,
+                "readonly": false
+            }
+    );
 	    
             // Register an (optional) callback.
             kite.finished(function (status, request_token) {
